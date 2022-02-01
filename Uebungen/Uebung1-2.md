@@ -1,4 +1,6 @@
-# Werver mit Node.js Bordmittel
+# Server mit Node.js Bordmittel
+
+1. Erstellen Sie einen Ordner für alle Übungen, `Uebungen`, und darin einen Ordner für diese Übung `Uebung1-2`
 
 In Node.js gibt es folgende Modulsysteme:
 
