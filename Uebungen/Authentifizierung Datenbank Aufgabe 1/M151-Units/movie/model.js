@@ -3,8 +3,8 @@ import mysql from 'mysql2/promise';
 const connection = await mysql.createConnection({
   host: '127.0.0.1',
   //port: 3307,
-  user: 'vmadmin',
-  password: 'sml12345',
+  user: 'root',
+  password: '',
   database: 'movie-db',
 });
 
@@ -14,6 +14,38 @@ export async function getAll(userId) {
   const query = 'SELECT * FROM Movies WHERE user = ? OR public = 1';
   const [data] = await connection.query(query, [userId]);
   return data;
+}
+
+export async function getUserRating(movieId, userId) {
+  const query = 'SELECT rating FROM Ratings WHERE movie = ? and user = ?';
+  const [data] = await connection.query(query, [movieId, userId]);
+  return data;
+}
+
+export async function getAverageRating(movieId, userId) {
+  const query = "SELECT AVG(rating) AS average FROM Ratings WHERE movie = ?";
+  const [result] = await connection.query(query, [movieId]);
+  return result;
+}
+
+export async function insertRating(movieId, userId, rating) {
+  const query = 'INSERT INTO Ratings (user, movie, rating) VALUES (?, ?, ?)';
+  const [result] = await connection.query(query, [userId, movieId, rating]);
+  return result;
+}
+
+export async function updateRating(movieId, userId, rating) {
+  const query = 'UPDATE Ratings SET rating = ? WHERE user = ? AND movie = ?';
+  const [result] = await connection.query(query, [rating, userId, movieId]);
+  return result;
+}
+
+export async function saveRating(movieId, userId, rating) {
+  if (!getUserRating(movieId, userId)) {
+    return insertRating(movieId, userId, rating);
+  } else {
+    return updateRating(movieId, userId, rating);
+  }
 }
 
 async function insert(movie, userId) {

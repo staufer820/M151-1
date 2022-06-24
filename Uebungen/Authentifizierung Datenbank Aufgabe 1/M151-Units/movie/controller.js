@@ -1,9 +1,13 @@
-import { getAll, remove, get, save } from './model.js';
+import { getAll, remove, get, save, getUserRating, getAverageRating, setRating } from './model.js';
 import { render } from './view.js';
 import { render as form } from './form.js';
 
 export async function listAction(request, response) {
-  const data = await getAll(request.user.id);
+  let data = await getAll(request.user.id);
+  data.forEach(d => {
+    d.userRating = await getUserRating(d.movie, d.user);
+    d.averageRating = await getAverageRating(d.movie);
+  });
   const body = render(data);
   response.send(body);
 }
@@ -25,6 +29,11 @@ export async function formAction(request, response) {
 
   const body = form(movie);
   response.send(body);
+}
+
+export async function rateMovie(request, response) {
+  await saveRating(request.movie, request.params.id, request.rating);
+  response.redirect(request.baseUrl);
 }
 
 export async function saveAction(request, response) {
